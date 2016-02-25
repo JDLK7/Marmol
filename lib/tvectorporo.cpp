@@ -1,4 +1,4 @@
-#include "tvectorporo.h"
+#include "../include/tvectorporo.h"
 
 TVectorPoro::TVectorPoro() {
 	dimension = 0;
