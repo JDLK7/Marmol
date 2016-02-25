@@ -1,14 +1,21 @@
-﻿#include "tporo.h"
+﻿#include "../include/tporo.h"
 
 using namespace std;
 
 void TPoro::toLower(char *color)
-{
+{	
+	char *col = new char[strlen(color)+1];
+
 	for (unsigned int i = 0; i < strlen(color); i++) {
 		if (color[i] >= 'A' && color[i] <= 'Z') {
-			color[i] += 32;
+			col[i] = color[i]+32;
+		}
+		else {
+			col[i] = color[i];
 		}
 	}
+
+	strcpy(this->color, col);
 }
 
 TPoro::TPoro() {
@@ -29,11 +36,13 @@ TPoro::TPoro(int x, int y, double volumen, char *color) {
 	this->x = x;
 	this->y = y;
 	this->volumen = volumen;
-
-	this->color = new char[strlen(color)+1];
-	strcpy(this->color,color);
-	
-	toLower(color);
+	if(color != NULL) {
+		this->color = new char[strlen(color)+1];
+		toLower(this->color);
+	}
+	else {
+		this->color = NULL;
+	}
 }
 
 TPoro::TPoro(const TPoro &poro)
@@ -41,8 +50,13 @@ TPoro::TPoro(const TPoro &poro)
 	x = poro.PosicionX();
 	y = poro.PosicionY();
 	volumen = poro.Volumen();
-	color = new char[strlen(poro.Color())+1];
-	strcpy(color, poro.Color());
+	if(poro.Color() != NULL) {
+		color = new char[strlen(poro.Color())+1];
+		strcpy(color, poro.Color());
+	}
+	else {
+		color = NULL;
+	}
 }
 
 TPoro::~TPoro()
@@ -54,6 +68,16 @@ TPoro::~TPoro()
 		delete color;
 		color = NULL;
 	}
+}
+
+void TPoro::Color(const char *color) {
+	if(color!=NULL) {
+		delete this->color;
+	}
+	this->color = new char[strlen(color)+1];
+	//CAMBIAR EHTO.
+	strcpy(this->color, color);
+	toLower(this->color);
 }
 
 TPoro & TPoro::operator=(const TPoro &poro)
