@@ -27,7 +27,7 @@ class TPoro {
 		bool operator!=(const TPoro &poro) const;
 		void Posicion(const int &x, const int &y) { this->x = x; this->y = y;};
 		void Volumen(const double &volumen) { this->volumen = volumen; };
-		void Color(const char *color);
+		void Color(const char *color) { strcpy(this->color, color); toLower(this->color); };
 		int PosicionX() const { return x; };
 		int PosicionY() const { return y; };
 		double Volumen() const { return volumen; };
