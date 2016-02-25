@@ -2,7 +2,7 @@
 #define T_VECTOR_PORO_H
 
 #include <iostream>
-#include "TPoro.h"
+#include "tporo.h"
 
 using namespace std;
 

@@ -1,4 +1,4 @@
-﻿#include "TPoro.h"
+﻿#include "tporo.h"
 
 using namespace std;
 
