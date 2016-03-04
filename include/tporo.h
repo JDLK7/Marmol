@@ -12,7 +12,7 @@ class TPoro {
 		int y;
 		double volumen;
 		char* color;
-		void toLower(char *color);
+		char * toLower(const char *c);
 	public:
 		//Forma canónica.
 		TPoro();

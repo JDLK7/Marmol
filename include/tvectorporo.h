@@ -12,10 +12,11 @@ class TVectorPoro
 		int dimension;
 		TPoro *datos;
 		TPoro error;
+		void Copiar(const TVectorPoro &vector);
 
 	public:
 		TVectorPoro();
-		TVectorPoro(const int &dimension);
+		TVectorPoro(int dimension);
 		TVectorPoro(const TVectorPoro &vector);
 		~TVectorPoro();
 		TVectorPoro & operator=(const TVectorPoro &vector);
@@ -25,7 +26,8 @@ class TVectorPoro
 		bool operator!=(const TVectorPoro &vector) const;
 		TPoro & operator[](const int &indice);		//Parte izquierda.
 		TPoro operator[](const int &indice) const;	//Parte derecha.
-		int Longitud() const {return dimension;};
+		int Longitud() const {return this->dimension;};
+		int Cantidad() const;
 		bool Redimensionar(const int &tam);
 
 	friend ostream & operator<<(ostream &os, TVectorPoro &vector);
