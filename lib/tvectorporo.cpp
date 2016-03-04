@@ -1,11 +1,25 @@
 #include "../include/tvectorporo.h"
 
+void TVectorPoro::Copiar(const TVectorPoro &vector) {
+	dimension = vector.Longitud();
+
+	if(dimension != 0) {
+		datos = new TPoro[dimension];
+		for(int i=0; i<dimension; i++) {
+			datos[i] = vector[i+1];
+		}
+	}
+	else {
+		datos = NULL;
+	}
+}
+
 TVectorPoro::TVectorPoro() {
 	dimension = 0;
 	datos = NULL;
 }
 
-TVectorPoro::TVectorPoro(const int &dimension) {
+TVectorPoro::TVectorPoro(int dimension) {
 	if(dimension <= 0) {
 		this->dimension = 0;
 		datos = NULL;
@@ -17,29 +31,21 @@ TVectorPoro::TVectorPoro(const int &dimension) {
 }
 
 TVectorPoro::TVectorPoro(const TVectorPoro &vector) {
-	dimension = vector.Longitud();
-	datos = new TPoro[dimension];
-
-	for(int i=0; i<dimension; i++) {
-		datos[i] = vector[i+1];
-	}
+	Copiar(vector);
 }
 
 TVectorPoro::~TVectorPoro() {
 	dimension = 0;
 	if(datos!=NULL) {
-		delete datos;
+		delete [] datos;
 		datos = NULL;
 	}
 }
 
 TVectorPoro & TVectorPoro::operator=(const TVectorPoro &vector) {
-	(*this).~TVectorPoro();
-	dimension = vector.Longitud();
-	
-	datos = new TPoro[dimension];
-	for(int i=0; i<dimension; i++) {
-		datos[i] = vector[i];
+	if((*this) != vector) {
+		(*this).~TVectorPoro();
+		Copiar(vector);
 	}
 
 	return *this;
@@ -64,10 +70,10 @@ bool TVectorPoro::operator==(const TVectorPoro &vector) const {
 
 bool TVectorPoro::operator!=(const TVectorPoro &vector) const {
 	if((*this) == vector) {
-		return true;
+		return false;
 	}
 	else {
-		return false;
+		return true;
 	}
 }
 
@@ -122,7 +128,6 @@ TPoro & TVectorPoro::operator[](const int &indice) {
 		return datos[indice - 1];
 	}
 	else {
-		error;
 		return error;
 	}
 }
@@ -137,12 +142,28 @@ TPoro TVectorPoro::operator[](const int &indice) const{
 	}
 }
 
+int TVectorPoro::Cantidad() const {
+	int c = 0;
+	for(int i=0; i<dimension; i++) {
+		if(!datos[i].EsVacio()) {
+			c++;
+		}
+	}
+
+	return c;
+}
+
 
 ostream & operator<<(ostream &os, TVectorPoro &vector) {
 	os << "[";
 	for(int i=0; i<vector.dimension; i++) {
-		os << vector[i] << " ";
+		os << i+1 << " ";
+		os << vector[i+1];
+		if(i < vector.dimension-1) {
+			 os << " ";
+		}
 	}
+	os << "]";
 
 	return os;
 }

@@ -3,9 +3,9 @@ OPTIONS= -g
 DEBUG= #-D DEBUG
 LIBDIR=lib
 INCLUDEDIR=include
-_OBJ= tporo.o
+_OBJ= tporo.o tvectorporo.o
 OBJ = $(patsubst %,$(LIBDIR)/%,$(_OBJ))
-RUTA = src/tad10.cpp
+RUTA = src/tad.cpp
 
 tad: $(RUTA) $(OBJ)
 	$(CC) $(OPTIONS) $(DEBUG) -I$(INCLUDEDIR) $(RUTA) $(OBJ) -o tad

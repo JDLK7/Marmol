@@ -2,20 +2,18 @@
 
 using namespace std;
 
-void TPoro::toLower(char *color)
+char * TPoro::toLower(const char *c)
 {	
-	char *col = new char[strlen(color)+1];
+	char *col = new char[strlen(c)+1];
+	strcpy(col, c);
 
-	for (unsigned int i = 0; i < strlen(color); i++) {
-		if (color[i] >= 'A' && color[i] <= 'Z') {
-			col[i] = color[i]+32;
-		}
-		else {
-			col[i] = color[i];
+	for (unsigned int i = 0; i < strlen(col); i++) {
+		if (col[i] >= 'A' && col[i] <= 'Z') {
+			col[i] = col[i]+32;
 		}
 	}
 
-	strcpy(this->color, col);
+	return col;
 }
 
 TPoro::TPoro() {
@@ -38,7 +36,7 @@ TPoro::TPoro(int x, int y, double volumen, char *color) {
 	this->volumen = volumen;
 	if(color != NULL) {
 		this->color = new char[strlen(color)+1];
-		toLower(this->color);
+		this->color = toLower(color);
 	}
 	else {
 		this->color = NULL;
@@ -72,32 +70,43 @@ TPoro::~TPoro()
 
 void TPoro::Color(const char *color) {
 	if(color!=NULL) {
-		delete this->color;
+		if(this->color != NULL) {
+			delete this->color;
+		}
+		this->color = new char[strlen(color)+1];
+		this->color = toLower(color);
 	}
-	this->color = new char[strlen(color)+1];
-	//CAMBIAR EHTO.
-	strcpy(this->color, color);
-	toLower(this->color);
 }
 
 TPoro & TPoro::operator=(const TPoro &poro)
 {
-	(*this).~TPoro();
-	x = poro.PosicionX();
-	y = poro.PosicionY();
-	volumen = poro.Volumen();
-	color = new char[strlen(poro.Color())+1];
-	color = strcpy(color, poro.Color());
+	if((*this) != poro) {
+		(*this).~TPoro();
+		x = poro.PosicionX();
+		y = poro.PosicionY();
+		volumen = poro.Volumen();
+		this->Color(poro.Color());
+	}
 
 	return (*this);
 }
 
+
+// VIOLASION POR ACA
 bool TPoro::operator==(const TPoro & poro) const
 {
 	if (this->PosicionX() == poro.PosicionX() && this->PosicionY() == poro.PosicionY() && volumen == poro.Volumen()) {
-		//Lio de punteros.
-		if ((*color) == (*poro.Color())) {
+		if((color == NULL && poro.Color() != NULL) || (color != NULL && poro.Color() == NULL)) {
+			return false;
+		}
+		else if(color == NULL && poro.Color() == NULL) {
 			return true;
+		}
+		else if(strcmp(color, poro.Color()) == 0) {
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 	return false;
