@@ -10,7 +10,8 @@ TListaNodo::TListaNodo(const TListaNodo &nodo) : e(nodo.e) {
 	siguiente = NULL;
 }
 
-TListaNodo::~TListaNodo() {
+//No se tendria que hacer layering del destructor?
+TListaNodo::~TListaNodo() : ~e() {
 	anterior = NULL;
 	siguiente = NULL;
 }
@@ -106,11 +107,11 @@ TListaPoro::TListaPoro() {
 }
 
 TListaPoro::TListaPoro(const TListaPoro &lista) {
-	
+
 }
 
 TListaPoro::~TListaPoro() {
-
+	
 }
 
 TListaPoro & TListaPoro::operator=(const TListaPoro &lista) {
@@ -141,15 +142,25 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 		p.pos = primero;
 
 		while(p.pos != NULL) {
-			v = poro.Volumen();
-			v1 = p.pos->e.Volumen();
-			v2 = p.Siguiente().pos->e.Volumen();
 
-			//3 CASOS EN LA CABEZA, EN LA COLA O EN MEDIO
-			if(v >= v1 && v < v2) {				
-
+			if(p.Siguiente().pos == NULL) {
+				InsertarCola(poro);
 				return true;
 			}
+			else {
+				v = poro.Volumen();
+				v1 = p.pos->e.Volumen();
+				v2 = p.Siguiente().pos->e.Volumen();
+
+				if(v < v1 && p.pos == primero) {
+					InsertarCabeza(poro);
+					return true;
+				}
+				else if(v >= v1 && v < v2){
+					InsertarEntre(poro, p);
+					return true;
+				}
+			}			
 
 			p = p.Siguiente();
 		}
@@ -245,36 +256,3 @@ TListaPoro TListaPoro::ExtraerRango(int n1, int n2) {
 }
 
 ostream & operator<<(ostream &os,const TListaPoro &lista);
-
-
-/* INSERTAR V1
-
-bool TListaPoro::Insertar(const TPoro &poro) {
-	TListaPosicion p;
-	double v, v1, v2;
-
-	p.pos = primero;
-
-	while( !(p.pos != ultimo) ) {
-		v = p.pos->e.Volumen();
-		v1 = p.Anterior().pos->e.Volumen();
-		v2 = p.Siguiente().pos->e.Volumen();
-
-		if(v >= v1 && v < v2) {
-			TListaNodo n;
-			n.e = poro;
-			n.siguiente = p.Siguiente().pos;
-			n.anterior = p.Anterior().pos;
-			n.siguiente->anterior = &n;
-			n.anterior->siguiente = &n;
-
-			return true;
-		}
-
-		p = p.Siguiente();
-	}
-
-	return false;
-}
-
-*/
