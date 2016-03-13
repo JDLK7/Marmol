@@ -86,13 +86,13 @@ bool TVectorPoro::Redimensionar(const int &tam) {
 	}
 	else if(tam > dimension) {
 		//Guardamos los datos en un vector auxiliar.
-		TPoro *aux = new TPoro[tam];
+		TPoro *aux = new TPoro[dimension];
 		for(int i=0; i<dimension; i++) {
 			aux[i] = datos[i];
 		}
 
 		//Redimensionamos el array de partida.
-		delete datos;
+		delete [] datos;
 		datos = new TPoro[tam];
 
 		for(int i=0; i<dimension; i++) {
@@ -100,10 +100,8 @@ bool TVectorPoro::Redimensionar(const int &tam) {
 		}
 
 		//Borramos el array auxiliar.
-		delete aux;
+		delete [] aux;
 		aux = NULL;
-
-		return true;
 	}
 	else {	//Si tam < dimension
 		TPoro *aux = new TPoro[tam];
@@ -111,16 +109,16 @@ bool TVectorPoro::Redimensionar(const int &tam) {
 			aux[i] = datos[i];
 		}
 
-		delete datos;
+		delete [] datos;
 		datos = new TPoro[tam];
 
 		for(int i=0; i<tam; i++) {
 			datos[i] = aux[i];
 		}
-
-		return true;
 	}
 
+	dimension = tam;
+	return true;
 }
 
 TPoro & TVectorPoro::operator[](const int &indice) {
