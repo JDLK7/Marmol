@@ -11,7 +11,7 @@ TListaNodo::TListaNodo(const TListaNodo &nodo) : e(nodo.e) {
 }
 
 //No se tendria que hacer layering del destructor?
-TListaNodo::~TListaNodo() : ~e() {
+TListaNodo::~TListaNodo() {
 	anterior = NULL;
 	siguiente = NULL;
 }
@@ -74,27 +74,21 @@ bool TListaPosicion::EsVacia() const{
 }
 
 ////////////////////////////////////// TListaPoro //////////////////////////////////////
-void TListaPoro::InsertarCabeza(const TPoro &poro) {
-	TListaNodo n;
-	n.e = poro;
+void TListaPoro::InsertarCabeza(TListaNodo &n) {
 	n.siguiente = primero;
 	primero = &n;
 	n.anterior = NULL;
 	n.siguiente->anterior = &n;
 }
 
-void TListaPoro::InsertarCola(const TPoro &poro) {
-	TListaNodo n;
-	n.e = poro;
+void TListaPoro::InsertarCola(TListaNodo &n) {
 	n.siguiente = NULL;
 	n.anterior = ultimo;
 	ultimo = &n;
 	n.anterior->siguiente = &n;
 }
 
-void TListaPoro::InsertarEntre(const TPoro &poro, const TListaPosicion &p) {
-	TListaNodo n;
-	n.e = poro;
+void TListaPoro::InsertarEntre(TListaNodo &n, const TListaPosicion &p) {
 	n.siguiente = p.Siguiente().pos;
 	n.anterior = p.pos;
 	n.siguiente->anterior = &n;
@@ -107,11 +101,36 @@ TListaPoro::TListaPoro() {
 }
 
 TListaPoro::TListaPoro(const TListaPoro &lista) {
+	if(!lista.EsVacia()) {
+		TListaPosicion p = lista.Primera();
+		TListaNodo n(*p.pos);
+		primero = ultimo = &n;
+		p = p.Siguiente();
 
+		while(!p.EsVacia()) {
+			TListaNodo m(*p.pos);
+			InsertarCola(m);
+
+			p = p.Siguiente();
+		}
+	}
+	else {
+		primero = NULL;
+		ultimo = NULL;
+	}
 }
 
 TListaPoro::~TListaPoro() {
-	
+	TListaPosicion p, q;
+	q = Primera();
+
+	while(!q.EsVacia()) {
+		p = q;
+		q = q.Siguiente();
+		delete p.pos;
+	}
+
+	primero = ultimo = NULL;
 }
 
 TListaPoro & TListaPoro::operator=(const TListaPoro &lista) {
@@ -135,7 +154,7 @@ bool TListaPoro::EsVacia() const{
 }
 
 bool TListaPoro::Insertar(const TPoro &poro) {
-	if(!Buscar(poro)) {
+	if(!Buscar(poro) && !EsVacia()) {
 		TListaPosicion p;
 		double v, v1, v2;
 
@@ -144,7 +163,10 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 		while(p.pos != NULL) {
 
 			if(p.Siguiente().pos == NULL) {
-				InsertarCola(poro);
+				TListaNodo n;
+				n.e = poro;
+
+				InsertarCola(n);
 				return true;
 			}
 			else {
@@ -153,11 +175,17 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 				v2 = p.Siguiente().pos->e.Volumen();
 
 				if(v < v1 && p.pos == primero) {
-					InsertarCabeza(poro);
+					TListaNodo n;
+					n.e = poro;
+
+					InsertarCabeza(n);
 					return true;
 				}
 				else if(v >= v1 && v < v2){
-					InsertarEntre(poro, p);
+					TListaNodo n;
+					n.e = poro;
+
+					InsertarEntre(n, p);
 					return true;
 				}
 			}			
@@ -173,11 +201,42 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 }
 
 bool TListaPoro::Borrar(const TPoro &poro) {
+	if(Buscar(poro) && !EsVacia()) {
+		if(Longitud() > 1) {
+			TListaNodo *n;
 
+			while(n != NULL) {
+				if(n->e == poro) {
+					if(n == primero) {
+						primero = n->siguiente;
+						n->siguiente->anterior = NULL;
+					}
+					else if(n == ultimo) {
+						ultimo = n->anterior;
+						n->anterior->siguiente = NULL;
+					}
+					else {
+						n->siguiente->anterior = n->anterior;
+						n->anterior->siguiente = n->siguiente;
+					}
+
+					(*n).~TListaNodo();
+					return true;
+				}
+
+				n = n->siguiente;
+			}
+		}
+		else {
+			(*this).~TListaPoro();
+		}
+	}
+
+	return false;
 }
 
 bool TListaPoro::Borrar(const TListaPosicion &origen) {
-
+	return Borrar(origen.pos->e);
 }
 
 TPoro TListaPoro::Obtener(const TListaPosicion &origen) const{

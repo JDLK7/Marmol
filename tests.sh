@@ -1,5 +1,5 @@
 TESTSPORO=25
-TESTSVECTOR=18
+TESTSVECTOR=19
 TESTSTLISTA=12
 nombreBase="tad"
 extension=".cpp"

@@ -39,9 +39,9 @@ class TListaPoro {
 	private:
 		TListaNodo *primero;
 		TListaNodo *ultimo;
-		void InsertarCabeza(const TPoro &poro);
-		void InsertarCola(const TPoro &poro);
-		void InsertarEntre(const TPoro &poro, const TListaPosicion &p);
+		void InsertarCabeza(TListaNodo &n);
+		void InsertarCola(TListaNodo &n);
+		void InsertarEntre(TListaNodo &n, const TListaPosicion &p);
 	public:
 		TListaPoro();
 		TListaPoro(const TListaPoro &lista);
