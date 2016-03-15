@@ -3,7 +3,7 @@ OPTIONS= -g
 DEBUG= #-D DEBUG
 LIBDIR=lib
 INCLUDEDIR=include
-_OBJ= tporo.o tvectorporo.o
+_OBJ= tporo.o tvectorporo.o tlistaporo.o
 OBJ = $(patsubst %,$(LIBDIR)/%,$(_OBJ))
 RUTA = src/tad.cpp
 

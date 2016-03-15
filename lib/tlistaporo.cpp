@@ -206,7 +206,12 @@ bool TListaPoro::EsVacia() const{
 }
 
 bool TListaPoro::Insertar(const TPoro &poro) {
-	if(!Buscar(poro) && !EsVacia()) {
+	if(EsVacia()) {
+		TListaNodo *n = new TListaNodo();
+		n->e = poro;
+		primero = ultimo = n;
+	}
+	else if(!Buscar(poro)) {
 		TListaPosicion p;
 		double v, v1, v2;
 
@@ -253,34 +258,33 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 }
 
 bool TListaPoro::Borrar(const TPoro &poro) {
-	if(Buscar(poro) && !EsVacia()) {
-		if(Longitud() > 1) {
-			TListaNodo *n;
+	if(!EsVacia() && Buscar(poro)) {
+		if(Longitud() == 1) {
+			(*this).~TListaPoro();
+			return true;
+		}
+		else {
+			TListaPosicion p;
+			p = Primera();
 
-			while(n != NULL) {
-				if(n->e == poro) {
-					if(n == primero) {
-						primero = n->siguiente;
-						n->siguiente->anterior = NULL;
+			while(!p.EsVacia()) {
+				if(p.pos->e == poro) {
+					if(p.pos == primero) {
+						primero = p.pos-> siguiente;
 					}
-					else if(n == ultimo) {
-						ultimo = n->anterior;
-						n->anterior->siguiente = NULL;
+					else if(p.pos == ultimo) {
+						ultimo = p.pos -> anterior;
 					}
 					else {
-						n->siguiente->anterior = n->anterior;
-						n->anterior->siguiente = n->siguiente;
+						p.pos->anterior->siguiente = p.pos->siguiente;
+						p.pos->siguiente->anterior = p.pos->anterior;
 					}
-
-					(*n).~TListaNodo();
+					delete p.pos;
 					return true;
 				}
 
-				n = n->siguiente;
+				p = p.Siguiente();
 			}
-		}
-		else {
-			(*this).~TListaPoro();
 		}
 	}
 
@@ -328,7 +332,7 @@ int TListaPoro::Longitud() const{
 		TListaPosicion p;
 		p.pos = primero;
 
-		int l = 0;
+		int l = 1;
 
 		while( !(p.pos == ultimo) ) {
 			l++;
@@ -396,7 +400,7 @@ ostream & operator<<(ostream &os, const TListaPoro &lista) {
 
 		while(!p.EsVacia()) {
 			os << lista.Obtener(p);
-			if(p.Siguiente().EsVacia()) {
+			if(!p.Siguiente().EsVacia()) {
 				os << " ";
 			}
 			p = p.Siguiente();
@@ -406,3 +410,40 @@ ostream & operator<<(ostream &os, const TListaPoro &lista) {
 
 	return os;
 }
+
+/*
+bool TListaPoro::Borrar(const TPoro &poro) {
+	if(Buscar(poro) && !EsVacia()) {
+		if(Longitud() > 1) {
+			TListaNodo *n;
+
+			while(n != NULL) {
+				if(n->e == poro) {
+					if(n == primero) {
+						primero = n->siguiente;
+						n->siguiente->anterior = NULL;
+					}
+					else if(n == ultimo) {
+						ultimo = n->anterior;
+						n->anterior->siguiente = NULL;
+					}
+					else {
+						n->siguiente->anterior = n->anterior;
+						n->anterior->siguiente = n->siguiente;
+					}
+
+					(*n).~TListaNodo();
+					return true;
+				}
+
+				n = n->siguiente;
+			}
+		}
+		else {
+			(*this).~TListaPoro();
+		}
+	}
+
+	return false;
+}
+*/
