@@ -74,42 +74,16 @@ bool TListaPosicion::EsVacia() const{
 }
 
 ////////////////////////////////////// TListaPoro //////////////////////////////////////
-void TListaPoro::InsertarCabeza(TListaNodo &n) {
-	n.siguiente = primero;
-	primero = &n;
-	n.anterior = NULL;
-	n.siguiente->anterior = &n;
-}
-
-void TListaPoro::InsertarCola(TListaNodo &n) {
-	n.siguiente = NULL;
-	n.anterior = ultimo;
-	ultimo = &n;
-	n.anterior->siguiente = &n;
-}
-
-void TListaPoro::InsertarEntre(TListaNodo &n, const TListaPosicion &p) {
-	n.siguiente = p.Siguiente().pos;
-	n.anterior = p.pos;
-	n.siguiente->anterior = &n;
-	n.anterior->siguiente = &n;
-}
-
-TListaPoro::TListaPoro() {
-	primero = NULL;
-	ultimo = NULL;
-}
-
-TListaPoro::TListaPoro(const TListaPoro &lista) {
+void TListaPoro::Copiar(const TListaPoro &lista) {
 	if(!lista.EsVacia()) {
 		TListaPosicion p = lista.Primera();
-		TListaNodo n(*p.pos);
-		primero = ultimo = &n;
+		TListaNodo *n = new TListaNodo(*p.pos);
+		primero = ultimo = n;
 		p = p.Siguiente();
 
 		while(!p.EsVacia()) {
-			TListaNodo m(*p.pos);
-			InsertarCola(m);
+			TListaNodo *n = new TListaNodo(*p.pos);
+			InsertarCola(n);
 
 			p = p.Siguiente();
 		}
@@ -118,6 +92,37 @@ TListaPoro::TListaPoro(const TListaPoro &lista) {
 		primero = NULL;
 		ultimo = NULL;
 	}
+}
+
+void TListaPoro::InsertarCabeza(TListaNodo *n) {
+	n->siguiente = primero;
+	primero = n;
+	n->anterior = NULL;
+	n->siguiente->anterior = n;
+}
+
+void TListaPoro::InsertarCola(TListaNodo *n) {
+	n->siguiente = NULL;
+	n->anterior = ultimo;
+	ultimo = n;
+	n->anterior->siguiente = n;
+}
+
+void TListaPoro::InsertarEntre(TListaNodo *n, const TListaPosicion &p) {
+	n->siguiente = p.Siguiente().pos;
+	n->anterior = p.pos;
+	n->siguiente->anterior = n;
+	n->anterior->siguiente = n;
+}
+
+TListaPoro::TListaPoro() {
+	primero = NULL;
+	ultimo = NULL;
+}
+
+//CORREGIR
+TListaPoro::TListaPoro(const TListaPoro &lista) {
+	Copiar(lista);
 }
 
 TListaPoro::~TListaPoro() {
@@ -134,19 +139,66 @@ TListaPoro::~TListaPoro() {
 }
 
 TListaPoro & TListaPoro::operator=(const TListaPoro &lista) {
+	if(this->primero != lista.primero) {
+		(*this).~TListaPoro();
+		Copiar(lista);
+	}
 
+	return (*this);
 }
 
 bool TListaPoro::operator==(const TListaPoro &lista) const{
+	TListaPosicion p, q;
+	p = Primera();
+	q = lista.Primera();
 
+	if(Longitud() == lista.Longitud()) {
+		while(!p.EsVacia()) {
+			if(p.pos->e != q.pos->e) {
+				return false;
+			}
+
+			q = q.Siguiente();
+			p = p.Siguiente();
+		}
+	}
+	else {
+		return false;
+	}
+
+	return true;
 }
 
 TListaPoro TListaPoro::operator+(const TListaPoro &lista) {
+	TListaPoro l(*this);
 
+	if(!lista.EsVacia()) {
+		TListaPosicion p;
+		p = lista.Primera();
+
+		while(!p.EsVacia()) {
+			//Insertar ya comprueba que no este en la primera lista.
+			l.Insertar(p.pos->e);
+			p = p.Siguiente();
+		}
+	}
+	
+	return l;
 }
 
 TListaPoro TListaPoro::operator-(const TListaPoro &lista) {
+	TListaPoro l;
+	TListaPosicion p;
+	p = Primera();
 
+	while(!p.EsVacia()) {
+		if(!lista.Buscar(p.pos->e)) {
+			l.Insertar(p.pos->e);
+		}
+		p = p.Siguiente();
+	}
+
+	return l;
 }
 
 bool TListaPoro::EsVacia() const{
@@ -163,8 +215,8 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 		while(p.pos != NULL) {
 
 			if(p.Siguiente().pos == NULL) {
-				TListaNodo n;
-				n.e = poro;
+				TListaNodo *n = new TListaNodo();
+				n->e = poro;
 
 				InsertarCola(n);
 				return true;
@@ -175,15 +227,15 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 				v2 = p.Siguiente().pos->e.Volumen();
 
 				if(v < v1 && p.pos == primero) {
-					TListaNodo n;
-					n.e = poro;
+					TListaNodo *n = new TListaNodo();
+					n->e = poro;
 
 					InsertarCabeza(n);
 					return true;
 				}
 				else if(v >= v1 && v < v2){
-					TListaNodo n;
-					n.e = poro;
+					TListaNodo *n = new TListaNodo();
+					n->e = poro;
 
 					InsertarEntre(n, p);
 					return true;
@@ -311,7 +363,46 @@ TListaPosicion TListaPoro::Ultima() const{
 }
 
 TListaPoro TListaPoro::ExtraerRango(int n1, int n2) {
+	TListaPoro l;
+	if(n1 <= n2) {
+		TListaPosicion p;
+		p = Primera();
+		int i = 1;
 
+		while(!p.EsVacia() && i<=n2) {
+			if(i == n1) {
+				TListaNodo *n = new TListaNodo(*p.pos);
+				l.primero = l.ultimo = n;
+				Borrar(p);
+			}
+			else if(i > n1) {
+				l.Insertar(p.pos->e);
+				Borrar(p);
+			}
+
+			p = p.Siguiente();
+			i++;
+		}
+	}
+
+	return l;
 }
 
-ostream & operator<<(ostream &os,const TListaPoro &lista);
+ostream & operator<<(ostream &os, const TListaPoro &lista) {
+	os << "(";
+	if(!lista.EsVacia()) {
+		TListaPosicion p;
+		p = lista.Primera();
+
+		while(!p.EsVacia()) {
+			os << lista.Obtener(p);
+			if(p.Siguiente().EsVacia()) {
+				os << " ";
+			}
+			p = p.Siguiente();
+		}
+	}
+	os << ")";
+
+	return os;
+}

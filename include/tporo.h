@@ -35,7 +35,7 @@ class TPoro {
 		bool EsVacio() const;
 
 	//Funciones amigas.
-	friend ostream & operator<<(ostream &os, TPoro &poro);
+	friend ostream & operator<<(ostream &os, const TPoro &poro);
 };
 
 #endif

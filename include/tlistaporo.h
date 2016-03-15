@@ -2,7 +2,7 @@
 #define T_LISTAPORO_H
 
 #include <iostream>
-#include "tvectorporo.h"
+#include "tporo.h"
 
 using namespace std;
 
@@ -39,9 +39,10 @@ class TListaPoro {
 	private:
 		TListaNodo *primero;
 		TListaNodo *ultimo;
-		void InsertarCabeza(TListaNodo &n);
-		void InsertarCola(TListaNodo &n);
-		void InsertarEntre(TListaNodo &n, const TListaPosicion &p);
+		void Copiar(const TListaPoro &lista);
+		void InsertarCabeza(TListaNodo *n);
+		void InsertarCola(TListaNodo *n);
+		void InsertarEntre(TListaNodo *n, const TListaPosicion &p);
 	public:
 		TListaPoro();
 		TListaPoro(const TListaPoro &lista);
@@ -60,7 +61,7 @@ class TListaPoro {
 		TListaPosicion Primera() const;
 		TListaPosicion Ultima() const;
 		TListaPoro ExtraerRango(int n1, int n2);
-	friend ostream & operator<<(ostream &os,const TListaPoro &lista);
+	friend ostream & operator<<(ostream &os, const TListaPoro &lista);
 };
 
 #endif

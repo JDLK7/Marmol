@@ -132,7 +132,7 @@ bool TPoro::EsVacio() const
 /*Al ser una funcion amiga, deja acceder a los atributos privados
  *por lo tanto no hace falta utilizar los getters.
  */
-ostream & operator<<(ostream & os, TPoro & poro)
+ostream & operator<<(ostream &os, const TPoro &poro)
 {
 	if (!poro.EsVacio()) {
 		//Fijar precision 2 decimales;
