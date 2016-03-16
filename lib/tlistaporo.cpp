@@ -38,7 +38,9 @@ TListaPosicion::~TListaPosicion() {
 }
 
 TListaPosicion & TListaPosicion::operator=(const TListaPosicion &origen) {
-	pos = origen.pos;
+	if(! ((*this) == origen)) {
+		pos = origen.pos;
+	}
 	return (*this);
 }
 
@@ -368,23 +370,21 @@ TListaPosicion TListaPoro::Ultima() const{
 
 TListaPoro TListaPoro::ExtraerRango(int n1, int n2) {
 	TListaPoro l;
+
 	if(n1 <= n2) {
-		TListaPosicion p;
+		TListaPosicion p, q;
 		p = Primera();
 		int i = 1;
 
 		while(!p.EsVacia() && i<=n2) {
-			if(i == n1) {
-				TListaNodo *n = new TListaNodo(*p.pos);
-				l.primero = l.ultimo = n;
-				Borrar(p);
-			}
-			else if(i > n1) {
-				l.Insertar(p.pos->e);
-				Borrar(p);
+			q = p;
+			p = p.Siguiente();
+
+			if(i >= n1 || n1 <= 0) {
+				l.Insertar(q.pos->e);
+				Borrar(q);
 			}
 
-			p = p.Siguiente();
 			i++;
 		}
 	}
@@ -412,38 +412,16 @@ ostream & operator<<(ostream &os, const TListaPoro &lista) {
 }
 
 /*
-bool TListaPoro::Borrar(const TPoro &poro) {
-	if(Buscar(poro) && !EsVacia()) {
-		if(Longitud() > 1) {
-			TListaNodo *n;
-
-			while(n != NULL) {
-				if(n->e == poro) {
-					if(n == primero) {
-						primero = n->siguiente;
-						n->siguiente->anterior = NULL;
-					}
-					else if(n == ultimo) {
-						ultimo = n->anterior;
-						n->anterior->siguiente = NULL;
-					}
-					else {
-						n->siguiente->anterior = n->anterior;
-						n->anterior->siguiente = n->siguiente;
-					}
-
-					(*n).~TListaNodo();
-					return true;
-				}
-
-				n = n->siguiente;
+if(i == n1 || n1 <= 0) {
+				TListaNodo *n = new TListaNodo(*p.pos);
+				l.primero = l.ultimo = n;
+				Borrar(p);
 			}
-		}
-		else {
-			(*this).~TListaPoro();
-		}
-	}
+			else if(i > n1) {
+				l.Insertar(p.pos->e);
+				Borrar(p);
+			}
 
-	return false;
-}
-*/
+			p = p.Siguiente();
+			i++;
+			*/
