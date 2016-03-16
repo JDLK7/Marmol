@@ -410,18 +410,3 @@ ostream & operator<<(ostream &os, const TListaPoro &lista) {
 
 	return os;
 }
-
-/*
-if(i == n1 || n1 <= 0) {
-				TListaNodo *n = new TListaNodo(*p.pos);
-				l.primero = l.ultimo = n;
-				Borrar(p);
-			}
-			else if(i > n1) {
-				l.Insertar(p.pos->e);
-				Borrar(p);
-			}
-
-			p = p.Siguiente();
-			i++;
-			*/
