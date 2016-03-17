@@ -14,12 +14,12 @@ void TVectorPoro::Copiar(const TVectorPoro &vector) {
 	}
 }
 
-TVectorPoro::TVectorPoro() {
+TVectorPoro::TVectorPoro() : error() {
 	dimension = 0;
 	datos = NULL;
 }
 
-TVectorPoro::TVectorPoro(int dimension) {
+TVectorPoro::TVectorPoro(int dimension) : error() {
 	if(dimension <= 0) {
 		this->dimension = 0;
 		datos = NULL;
@@ -30,7 +30,7 @@ TVectorPoro::TVectorPoro(int dimension) {
 	}
 }
 
-TVectorPoro::TVectorPoro(const TVectorPoro &vector) {
+TVectorPoro::TVectorPoro(const TVectorPoro &vector) : error(vector.error) {
 	Copiar(vector);
 }
 
