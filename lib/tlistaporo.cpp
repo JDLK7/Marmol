@@ -227,9 +227,23 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 
 		p.pos = primero;
 
-		while(p.pos != NULL) {
+		if(Longitud() == 1) {
+			TListaNodo *n = new TListaNodo();
+			n->e = poro;
 
-			if(p.Siguiente().pos == NULL) {
+			if(poro.Volumen() < p.pos->e.Volumen()) {
+				InsertarCabeza(n);
+			}
+			else {
+				InsertarCola(n);
+			}
+
+			return true;
+		}
+
+		while(!p.EsVacia()) {
+
+			if(p == Ultima()) {
 				TListaNodo *n = new TListaNodo();
 				n->e = poro;
 
@@ -241,7 +255,7 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 				v1 = p.pos->e.Volumen();
 				v2 = p.Siguiente().pos->e.Volumen();
 
-				if(v < v1 && p.pos == primero) {
+				if(v < v1 && p == Primera()) {
 					TListaNodo *n = new TListaNodo();
 					n->e = poro;
 
@@ -280,9 +294,11 @@ bool TListaPoro::Borrar(const TPoro &poro) {
 			while(!p.EsVacia()) {
 				if(p.pos->e == poro) {
 					if(p.pos == primero) {
+						p.pos->siguiente->anterior = NULL;
 						primero = p.pos-> siguiente;
 					}
 					else if(p.pos == ultimo) {
+						p.pos->anterior->siguiente = NULL;
 						ultimo = p.pos -> anterior;
 					}
 					else {
@@ -321,7 +337,6 @@ TPoro TListaPoro::Obtener(const TListaPosicion &origen) const{
 
 }
 
-//ESTO PUEDE ACABAR MAL XD
 bool TListaPoro::Buscar(const TPoro &poro) const{
 	if(!EsVacia()) {
 		TListaPosicion p;
@@ -394,9 +409,9 @@ TListaPoro TListaPoro::ExtraerRango(int n1, int n2) {
 			q = p;
 			p = p.Siguiente();
 
-			if(i >= n1 || n1 <= 0) {
+			if(i >= n1) {
 				l.Insertar(q.pos->e);
-				Borrar(q);
+				Borrar(q.pos->e);
 			}
 
 			i++;
