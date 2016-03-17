@@ -50,19 +50,25 @@ bool TListaPosicion::operator==(const TListaPosicion &origen) const{
 
 TListaPosicion TListaPosicion::Anterior() const{
 	TListaPosicion p;
-	if(pos != NULL) {
-		p.pos = pos->anterior;	
-	}
 	
+	if(pos != NULL) {
+		if(pos->anterior != NULL) {
+			p.pos = pos->anterior;
+		}
+	}
+
 	return p;
 }
 
 TListaPosicion TListaPosicion::Siguiente() const{
 	TListaPosicion p;
-	if(pos != NULL) {
-		p.pos = pos->siguiente;	
-	}
 	
+	if(pos != NULL) {
+		if(pos->siguiente != NULL) {
+			p.pos = pos->siguiente;
+		}
+	}
+
 	return p;
 }
 
@@ -212,6 +218,8 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 		TListaNodo *n = new TListaNodo();
 		n->e = poro;
 		primero = ultimo = n;
+
+		return true;
 	}
 	else if(!Buscar(poro)) {
 		TListaPosicion p;
@@ -255,7 +263,7 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 		return false;
 	}
 	else {
-		false;
+		return false;
 	}
 }
 
@@ -298,13 +306,19 @@ bool TListaPoro::Borrar(const TListaPosicion &origen) {
 }
 
 TPoro TListaPoro::Obtener(const TListaPosicion &origen) const{
-	if(origen.EsVacia()) {
-		TPoro p;
-		return p;
+	TPoro p;
+	if(!EsVacia()) {
+		if(origen.EsVacia()) {
+			return p;
+		}
+		else {
+			return origen.pos->e;
+		}
 	}
 	else {
-		return origen.pos->e;
+		return p;
 	}
+
 }
 
 //ESTO PUEDE ACABAR MAL XD
