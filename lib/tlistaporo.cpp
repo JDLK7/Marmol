@@ -221,46 +221,64 @@ bool TListaPoro::Insertar(const TPoro &poro) {
 
 		return true;
 	}
-	else {
-		if(!Buscar(poro)) {
-			double v = poro.Volumen();
-			double v1 = Primera().pos->e.Volumen();
-			double v2 = Ultima().pos->e.Volumen();
+	else if(!Buscar(poro)) {
+		TListaPosicion p;
+		double v, v1, v2;
 
-			if(v < v1) {
-				TListaNodo *n = new TListaNodo();
-				n->e = poro;
+		p.pos = primero;
+
+		if(Longitud() == 1) {
+			TListaNodo *n = new TListaNodo();
+			n->e = poro;
+
+			if(poro.Volumen() < p.pos->e.Volumen()) {
 				InsertarCabeza(n);
-				return true;
 			}
-			else if(v >= v2) {
+			else {
+				InsertarCola(n);
+			}
+
+			return true;
+		}
+
+		while(!p.EsVacia()) {
+
+			if(p == Ultima()) {
 				TListaNodo *n = new TListaNodo();
 				n->e = poro;
+
 				InsertarCola(n);
 				return true;
 			}
 			else {
-				TListaPosicion p;
-				p = Primera();
+				v = poro.Volumen();
 				v1 = p.pos->e.Volumen();
 				v2 = p.Siguiente().pos->e.Volumen();
 
-				while(!p.EsVacia()) {
-					if(v >= v1 && v < v2) {
-						TListaNodo *n = new TListaNodo();
-						n->e = poro;
-						InsertarEntre(n, p);
-						return true;
-					}
+				if(v < v1 && p == Primera()) {
+					TListaNodo *n = new TListaNodo();
+					n->e = poro;
 
-					p = p.Siguiente();
+					InsertarCabeza(n);
+					return true;
 				}
-			}
+				else if(v >= v1 && v < v2){
+					TListaNodo *n = new TListaNodo();
+					n->e = poro;
+
+					InsertarEntre(n, p);
+					return true;
+				}
+			}			
+
+			p = p.Siguiente();
 		}
-		else {
-			return false;
-		}
-	}	
+
+		return false;
+	}
+	else {
+		return false;
+	}
 }
 
 bool TListaPoro::Borrar(const TPoro &poro) {
@@ -421,50 +439,3 @@ ostream & operator<<(ostream &os, const TListaPoro &lista) {
 
 	return os;
 }
-
-/*
-if(EsVacia()) {
-		TListaNodo *n = new TListaNodo();
-		n->e = poro;
-		primero = ultimo = n;
-
-		return true;
-	}
-	else {
-		if(!Buscar(poro)) {
-			double v = poro.Volumen();
-
-			if(v < primero->e.Volumen()) {
-				TListaNodo *n = new TListaNodo();
-				n->e = poro;
-				InsertarCabeza(n);
-				return true;
-			}
-			else if(v >= ultimo->e.Volumen()) {
-				TListaNodo *n = new TListaNodo();
-				n->e = poro;
-				InsertarCola(n);
-				return true;
-			}
-			else {
-				TListaPosicion p;
-				p.pos = primero;
-				double v1 = p.pos->e.Volumen();
-				double v2 = p.Siguiente().pos->e.Volumen();
-
-				while(!p.EsVacia()) {
-					if(v >= v1 && v < v2) {
-						TListaNodo *n = new TListaNodo();
-						n->e = poro;
-						InsertarEntre(n, p);
-						return true;
-					}
-
-					p = p.Siguiente();
-				}
-			}
-		}
-		else {
-			return false;
-		}
-	}*/

@@ -1,4 +1,4 @@
-#include "tabbporo.h"
+#include "../include/tabbporo.h"
 
 TNodoABB::TNodoABB() : item(), iz(), de() {
 
@@ -25,6 +25,7 @@ TNodoABB & TNodoABB::operator=(const TNodoABB &nodo) {
 }
 
 //////////////////////////////// TABBPoro ////////////////////////////////
+
 void TABBPoro::Copiar(const TABBPoro &arbol) {
 	if(arbol.nodo != NULL) {
 		TNodoABB *n = new TNodoABB();
@@ -73,12 +74,22 @@ bool TABBPoro::operator==(const TABBPoro &arbol) const {
 
 }
 
+bool TABBPoro::operator!=(const TABBPoro &arbol) const {
+	return !(this==arbol);
+}
+
 bool TABBPoro::EsVacio() const {
 	return Raiz.EsVacio();
 }
 
-bool TABBPoro::Borrar(const TPoro &poro);
-bool TABBPoro::Buscar(const TPoro &poro);
+bool TABBPoro::Borrar(const TPoro &poro) {
+
+}
+
+bool TABBPoro::Buscar(const TPoro &poro) {
+
+}
+
 TPoro TABBPoro::Raiz() const {
 	if(nodo != NULL) {
 		return nodo->item
@@ -88,13 +99,52 @@ TPoro TABBPoro::Raiz() const {
 		return error;
 	}
 }
-int TABBPoro::Altura() const;
-int TABBPoro::Nodos() const;
-int TABBPoro::NodosHoja() const;
-TVectorPoro TABBPoro::Inorden() const;
-TVectorPoro TABBPoro::Preorden() const;
-TVectorPoro TABBPoro::Postorden() const;
-TVectorPoro TABBPoro::Niveles() const;
-TABBPoro TABBPoro::operator+(const TABBPoro &arbol);
-TABBPoro TABBPoro::operator+(const TABBPoro &arbol);
-ostream & TABBPoro::operator<<(ostream &os, const TABBPoro &arbol);
+int TABBPoro::Altura() const {
+	if(nodo->iz.nodo == NULL && nodo->de.nodo == NULL) {
+		return 1
+	}
+	else {
+		if(nodo->iz.Altura() > nodo->de.Altura()) {
+			return (1 + nodo->iz.Altura());
+		}
+		else {
+			return (1 + nodo->de.Altura());
+		}
+	}
+}
+
+int TABBPoro::Nodos() const {
+	
+}
+
+int TABBPoro::NodosHoja() const {
+
+}
+
+TVectorPoro TABBPoro::Inorden() const {
+
+}
+
+TVectorPoro TABBPoro::Preorden() const {
+
+}
+
+TVectorPoro TABBPoro::Postorden() const {
+
+}
+
+TVectorPoro TABBPoro::Niveles() const {
+
+}
+
+TABBPoro TABBPoro::operator+(const TABBPoro &arbol) {
+
+}
+
+TABBPoro TABBPoro::operator+(const TABBPoro &arbol) {
+
+}
+
+ostream & TABBPoro::operator<<(ostream &os, const TABBPoro &arbol) {
+	
+}
