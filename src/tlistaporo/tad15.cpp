@@ -311,10 +311,6 @@ void pruebasMias(){
   resultado = extraer.ExtraerRango(3, 3);
   cout<<endl<<extraer<<endl;
   cout<<resultado<<endl;
-
-
-
-
 }
 
 
