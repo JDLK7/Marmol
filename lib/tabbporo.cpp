@@ -82,12 +82,76 @@ bool TABBPoro::EsVacio() const {
 	return Raiz.EsVacio();
 }
 
+bool TABBPoro::Insertar(const TPoro &poro) {
+	//Arbol NO vacio
+	if(nodo != NULL) {
+		double v = poro.Volumen();
+		double vr = Raiz().Volumen();
+
+		//No se pueden insertar duplicados.
+		if(v == vr) {
+			return false;
+		}
+		else if(Hoja()) {
+			if(v > vr) {
+				nodo->de.nodo = new TNodoABB();
+				nodo->de.nodo.item = poro;
+			}
+			else {
+				nodo->iz.nodo = new TNodoABB();
+				nodo->iz.nodo.item = poro;
+			}
+		}
+		else {
+			if(v > vr) {
+				(nodo->de).Insertar(poro);
+			}
+			else {
+				(nodo->iz).Insertar(poro);
+			}
+		}
+
+	}
+	else {
+		nodo = new TNodoABB();
+		nodo->item = poro;
+	}
+
+	return true;
+}
+
 bool TABBPoro::Borrar(const TPoro &poro) {
 
 }
 
 bool TABBPoro::Buscar(const TPoro &poro) {
+	if(nodo != NULL) {
+		TPoro p = nodo->item;
 
+		if(p == poro) {
+			return true;
+		}
+		else {
+			if(poro.Volumen() > p.Volumen()) {
+				(nodo->de).Buscar(poro);
+			}
+			else {
+				(nodo->iz).Buscar(poro);
+			}
+		}
+
+	}
+	else {
+		return false;
+	}
+}
+
+bool TABBPoro::Hoja() const {
+	if(nodo != NULL && nodo->iz.nodo == NULL && nodo->de.nodo == NULL) {
+		return true;
+	}
+
+	return false;
 }
 
 TPoro TABBPoro::Raiz() const {
@@ -114,15 +178,31 @@ int TABBPoro::Altura() const {
 }
 
 int TABBPoro::Nodos() const {
-	
+	if(nodo != NULL) {
+		return ((nodo->de).Nodos() + (nodo->iz).Nodos() + 1);
+	}
+	else {
+		return 0;
+	}
 }
 
 int TABBPoro::NodosHoja() const {
-
+	if(nodo != NULL) {
+		if(Hoja()) {
+			return 1;
+		}
+		else {
+			return ((nodo->de).NodosHoja() + (nodo->iz).NodosHoja());
+		}
+	}
+	else {
+		return 0;
+	}
 }
 
 TVectorPoro TABBPoro::Inorden() const {
-
+	TVectorPoro vector(Nodos());
+	
 }
 
 TVectorPoro TABBPoro::Preorden() const {
