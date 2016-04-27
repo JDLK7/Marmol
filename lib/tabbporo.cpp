@@ -1,4 +1,5 @@
 #include "../include/tabbporo.h"
+#include <queue>
 
 TNodoABB::TNodoABB() : item(), iz(), de() {
 
@@ -12,19 +13,39 @@ TNodoABB::~TNodoABB() {
 
 }
 
+//REVISAR
 TNodoABB & TNodoABB::operator=(const TNodoABB &nodo) {
-	if(this != nodo) {
-		~TNodoABB();
+	item = nodo.item;
+	iz = nodo.iz;
+	de = nodo.de;
 
-		item = nodo.item;
-		iz = nodo.iz;
-		de = nodo.de;
-	}
-
-	return this;
+	return (*this);
 }
 
 //////////////////////////////// TABBPoro ////////////////////////////////
+void TABBPoro::InordenAux(TVectorPoro &vector, const int &pos) const {
+	if(nodo != NULL) {
+		nodo->iz.InordenAux(vector, pos);
+		vector[pos] = nodo->item;
+		nodo->de.InordenAux(vector, pos+1);
+	}
+}
+
+void TABBPoro::PreordenAux(TVectorPoro &vector, const int &pos) const {
+	if(nodo != NULL) {
+		vector[pos] = nodo->item;
+		nodo->iz.PreordenAux(vector, pos+1);
+		nodo->de.PreordenAux(vector, pos+1);
+	}
+}
+
+void TABBPoro::PostordenAux(TVectorPoro &vector, const int &pos) const {
+	if(nodo != NULL) {
+		nodo->iz.PostordenAux(vector, pos);
+		nodo->de.PostordenAux(vector, pos+1);
+		vector[pos+1] = nodo->item;
+	}
+}
 
 void TABBPoro::Copiar(const TABBPoro &arbol) {
 	if(arbol.nodo != NULL) {
@@ -39,12 +60,28 @@ void TABBPoro::Copiar(const TABBPoro &arbol) {
 	}
 }
 
+TNodoABB * TABBPoro::MayorHijo() const{
+	TNodoABB *n = NULL;
+	if(!EsVacio()) {
+		if(Hoja()) {
+			n = nodo;
+		}
+		else {
+			return (nodo->de).MayorHijo()
+		}
+	}
+
+	return n;
+}
+
 TABBPoro::TABBPoro() {
 	nodo = new TNodoABB();
 }
+
 TABBPoro::TABBPoro(const TABBPoro &arbol) {
 	Copiar(arbol);
 }
+
 TABBPoro::~TABBPoro() {
 	if(nodo != NULL) {
 		delete nodo;
@@ -53,35 +90,34 @@ TABBPoro::~TABBPoro() {
 }
 
 TABBPoro & TABBPoro::operator=(const TABBPoro &arbol) {
-	~TABBPoro();
+	(*this).~TABBPoro();
 	Copiar(arbol);
 
 	return (*this);
 }
 
 bool TABBPoro::operator==(const TABBPoro &arbol) const {
-	if(!Raiz().EsVacio() && !arbol.Raiz().EsVacio()) {
-		if(Raiz() == arbol.Raiz()) {
-			return ((nodo->iz == arbol.nodo->iz) && (nodo->de == arbol.nodo->de));
-		}
-		else {
-			return false;
-		}
+	if(arbol.Inorden() == Inorden()) {
+		return true;
 	}
 	else {
 		return false;
 	}
-
 }
 
 bool TABBPoro::operator!=(const TABBPoro &arbol) const {
-	return !(this==arbol);
+	return !((*this)==arbol);
 }
 
 bool TABBPoro::EsVacio() const {
-	return Raiz.EsVacio();
+	return nodo == NULL;
 }
 
+/*
+ * Buscar recorre el arbol recursivamente al igual que
+ * insertar, por lo tanto no creo que sea factible llamar a
+ * buscar antes de intentar insertarlo.
+ */
 bool TABBPoro::Insertar(const TPoro &poro) {
 	//Arbol NO vacio
 	if(nodo != NULL) {
@@ -95,11 +131,11 @@ bool TABBPoro::Insertar(const TPoro &poro) {
 		else if(Hoja()) {
 			if(v > vr) {
 				nodo->de.nodo = new TNodoABB();
-				nodo->de.nodo.item = poro;
+				nodo->de.nodo->item = poro;
 			}
 			else {
 				nodo->iz.nodo = new TNodoABB();
-				nodo->iz.nodo.item = poro;
+				nodo->iz.nodo->item = poro;
 			}
 		}
 		else {
@@ -121,7 +157,53 @@ bool TABBPoro::Insertar(const TPoro &poro) {
 }
 
 bool TABBPoro::Borrar(const TPoro &poro) {
+	if(!EsVacio()) {
+		if(nodo->item == poro) {
+			//Si es hoja se borra directamente
+			if(Hoja()) {
+				(*this).~TABBPoro();
+			}
+			//Tiene un solo hijo a la izquierda
+			else if(nodo->iz.nodo != NULL && nodo->de.nodo == NULL) {
+				TNodoABB *n = nodo;
+				nodo = nodo->iz.nodo;
+				n->iz.nodo = NULL;
+				delete n;
+			}
+			//Tiene un solo hijo a la derecha
+			else if(nodo->iz.nodo == NULL && nodo->de.nodo != NULL) {
+				TNodoABB *n = nodo;
+				nodo = nodo->de.nodo;
+				n->de.nodo = NULL;
+				delete n;
+			}
+			//Tiene dos hijos
+			else {
+				TNodoABB *n = nodo;
+				nodo = MayorHijo();
+				//Comprobamos que el nodo al que apuntaba no es MayorHijo para evitar bucles.
+				if(n->iz.nodo != nodo) {
+					nodo->iz.nodo = n->iz.nodo;
+				}
+				if(n->de.nodo != nodo) {
+					nodo->de.nodo = n->de.nodo;
+				}
+				n->de.nodo = NULL;
+				n->iz.nodo = NULL;
+				delete n;
+			}
 
+			return true;
+		}
+		else if(poro.Volumen() > nodo->item.Volumen()){
+			(nodo->de).Borrar(poro);
+		}
+		else {
+			(nodo->iz).Borrar(poro);
+		}
+	}
+
+	return false;
 }
 
 bool TABBPoro::Buscar(const TPoro &poro) {
@@ -156,7 +238,7 @@ bool TABBPoro::Hoja() const {
 
 TPoro TABBPoro::Raiz() const {
 	if(nodo != NULL) {
-		return nodo->item
+		return nodo->item;
 	}
 	else {
 		TPoro error;
@@ -165,7 +247,7 @@ TPoro TABBPoro::Raiz() const {
 }
 int TABBPoro::Altura() const {
 	if(nodo->iz.nodo == NULL && nodo->de.nodo == NULL) {
-		return 1
+		return 1;
 	}
 	else {
 		if(nodo->iz.Altura() > nodo->de.Altura()) {
@@ -201,20 +283,31 @@ int TABBPoro::NodosHoja() const {
 }
 
 TVectorPoro TABBPoro::Inorden() const {
-	TVectorPoro vector(Nodos());
-	
+	int posicion = 1;
+	TVectorPoro v(Nodos());
+	InordenAux(v, posicion);
+
+	return v;
 }
 
 TVectorPoro TABBPoro::Preorden() const {
+	int posicion = 1;
+	TVectorPoro v(Nodos());
+	PreordenAux(v, posicion);
 
+	return v;
 }
 
 TVectorPoro TABBPoro::Postorden() const {
+	int posicion = 1;
+	TVectorPoro v(Nodos());
+	PostordenAux(v, posicion);
 
+	return v;
 }
 
 TVectorPoro TABBPoro::Niveles() const {
-
+	
 }
 
 TABBPoro TABBPoro::operator+(const TABBPoro &arbol) {

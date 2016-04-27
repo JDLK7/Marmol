@@ -9,10 +9,11 @@ class TNodoABB;
 class TABBPoro {
 	private:
 		TNodoABB *nodo;
-		void InordenAux(const TVectorPoro &vector, const int &algo);
-		void PreordenAux(const TVectorPoro &vector, const int &algo);
-		void PostordenAux(const TVectorPoro &vector, const int &algo);
+		void InordenAux(TVectorPoro &vector, const int &algo) const;
+		void PreordenAux(TVectorPoro &vector, const int &algo) const;
+		void PostordenAux(TVectorPoro &vector, const int &algo) const;
 		void Copiar(const TABBPoro &arbol);
+		TNodoABB * TABBPoro::MayorHijo() const;
 	public:
 		TABBPoro();
 		TABBPoro(const TABBPoro &arbol);
@@ -21,6 +22,7 @@ class TABBPoro {
 		bool operator==(const TABBPoro &arbol) const;
 		bool operator!=(const TABBPoro &arbol) const;
 		bool EsVacio() const;
+		bool Insertar(const TPoro &poro);
 		bool Borrar(const TPoro &poro);
 		bool Buscar(const TPoro &poro);	//DEBERIA SER CONST
 		bool Hoja() const;
