@@ -30,7 +30,7 @@ class TVectorPoro
 		int Cantidad() const;
 		bool Redimensionar(const int &tam);
 
-	friend ostream & operator<<(ostream &os, TVectorPoro &vector);
+	friend ostream & operator<<(ostream &os, const TVectorPoro &vector);
 };
 
 #endif

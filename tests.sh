@@ -1,7 +1,7 @@
 TESTSPORO=25
 TESTSVECTOR=19
 TESTSTLISTA=15
-TESTSABBPORO=0
+TESTSABBPORO=22
 nombreBase="tad"
 extension=".cpp"
 zero="0"
@@ -92,7 +92,7 @@ if (( $Opcion == 4 || $Opcion == 5 )); then
 	echo "//////////////////////////////////////////////////////////////////"
 	echo "///////////////////////Pruebas TABBPoro///////////////////////////"
 	cp src/tabbporo/*.cpp src/
-	for (( i = 1; i <= $TESTSTABBPORO; i++ )); do
+	for (( i = 1; i <= $TESTSABBPORO; i++ )); do
 		
 		if (($i >= 10)); then
 			nombre=$nombreBase$i$extension 

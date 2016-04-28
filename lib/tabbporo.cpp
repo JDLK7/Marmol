@@ -23,27 +23,30 @@ TNodoABB & TNodoABB::operator=(const TNodoABB &nodo) {
 }
 
 //////////////////////////////// TABBPoro ////////////////////////////////
-void TABBPoro::InordenAux(TVectorPoro &vector, const int &pos) const {
-	if(nodo != NULL) {
+void TABBPoro::InordenAux(TVectorPoro &vector, int &pos) const {
+	if(!EsVacio()) {
 		nodo->iz.InordenAux(vector, pos);
 		vector[pos] = nodo->item;
-		nodo->de.InordenAux(vector, pos+1);
+		pos++;
+		nodo->de.InordenAux(vector, pos);
 	}
 }
 
-void TABBPoro::PreordenAux(TVectorPoro &vector, const int &pos) const {
+void TABBPoro::PreordenAux(TVectorPoro &vector, int &pos) const {
 	if(nodo != NULL) {
 		vector[pos] = nodo->item;
-		nodo->iz.PreordenAux(vector, pos+1);
-		nodo->de.PreordenAux(vector, pos+1);
+		pos++;
+		nodo->iz.PreordenAux(vector, pos);
+		nodo->de.PreordenAux(vector, pos);
 	}
 }
 
-void TABBPoro::PostordenAux(TVectorPoro &vector, const int &pos) const {
+void TABBPoro::PostordenAux(TVectorPoro &vector, int &pos) const {
 	if(nodo != NULL) {
 		nodo->iz.PostordenAux(vector, pos);
-		nodo->de.PostordenAux(vector, pos+1);
-		vector[pos+1] = nodo->item;
+		nodo->de.PostordenAux(vector, pos);
+		vector[pos] = nodo->item;
+		pos++;
 	}
 }
 
@@ -60,22 +63,12 @@ void TABBPoro::Copiar(const TABBPoro &arbol) {
 	}
 }
 
-TNodoABB * TABBPoro::MayorHijo() const{
-	TNodoABB *n = NULL;
-	if(!EsVacio()) {
-		if(Hoja()) {
-			n = nodo;
-		}
-		else {
-			return (nodo->de).MayorHijo()
-		}
-	}
-
-	return n;
+TNodoABB * TABBPoro::HijoDerecha() const {
+	return nodo->de.nodo;
 }
 
 TABBPoro::TABBPoro() {
-	nodo = new TNodoABB();
+	nodo = NULL;
 }
 
 TABBPoro::TABBPoro(const TABBPoro &arbol) {
@@ -125,17 +118,19 @@ bool TABBPoro::Insertar(const TPoro &poro) {
 		double vr = Raiz().Volumen();
 
 		//No se pueden insertar duplicados.
-		if(v == vr) {
+		if(poro == nodo->item) {
 			return false;
 		}
 		else if(Hoja()) {
 			if(v > vr) {
 				nodo->de.nodo = new TNodoABB();
 				nodo->de.nodo->item = poro;
+				return true;
 			}
 			else {
 				nodo->iz.nodo = new TNodoABB();
 				nodo->iz.nodo->item = poro;
+				return true;
 			}
 		}
 		else {
@@ -151,9 +146,8 @@ bool TABBPoro::Insertar(const TPoro &poro) {
 	else {
 		nodo = new TNodoABB();
 		nodo->item = poro;
+		return true;
 	}
-
-	return true;
 }
 
 bool TABBPoro::Borrar(const TPoro &poro) {
@@ -180,8 +174,8 @@ bool TABBPoro::Borrar(const TPoro &poro) {
 			//Tiene dos hijos
 			else {
 				TNodoABB *n = nodo;
-				nodo = MayorHijo();
-				//Comprobamos que el nodo al que apuntaba no es MayorHijo para evitar bucles.
+				nodo = HijoDerecha();
+				//Comprobamos que el nodo al que apuntaba no es HijoDerecha para evitar bucles.
 				if(n->iz.nodo != nodo) {
 					nodo->iz.nodo = n->iz.nodo;
 				}
@@ -202,19 +196,18 @@ bool TABBPoro::Borrar(const TPoro &poro) {
 			(nodo->iz).Borrar(poro);
 		}
 	}
-
-	return false;
+	else {
+		return false;
+	}
 }
 
-bool TABBPoro::Buscar(const TPoro &poro) {
-	if(nodo != NULL) {
-		TPoro p = nodo->item;
-
-		if(p == poro) {
+bool TABBPoro::Buscar(const TPoro &poro) const {
+	if(!EsVacio()) {
+		if(nodo->item == poro) {
 			return true;
 		}
 		else {
-			if(poro.Volumen() > p.Volumen()) {
+			if(poro.Volumen() > nodo->item.Volumen()) {
 				(nodo->de).Buscar(poro);
 			}
 			else {
@@ -246,22 +239,25 @@ TPoro TABBPoro::Raiz() const {
 	}
 }
 int TABBPoro::Altura() const {
-	if(nodo->iz.nodo == NULL && nodo->de.nodo == NULL) {
-		return 1;
-	}
-	else {
-		if(nodo->iz.Altura() > nodo->de.Altura()) {
+	if(!EsVacio()) {
+		if(Hoja()) {
+			return 1;
+		}
+		else if(nodo->iz.Altura() > nodo->de.Altura()) {
 			return (1 + nodo->iz.Altura());
 		}
 		else {
 			return (1 + nodo->de.Altura());
 		}
 	}
+	else {
+		return 0;
+	}
 }
 
 int TABBPoro::Nodos() const {
-	if(nodo != NULL) {
-		return ((nodo->de).Nodos() + (nodo->iz).Nodos() + 1);
+	if(!EsVacio()) {
+		return (1 + (nodo->de).Nodos() + (nodo->iz).Nodos());
 	}
 	else {
 		return 0;
@@ -269,7 +265,7 @@ int TABBPoro::Nodos() const {
 }
 
 int TABBPoro::NodosHoja() const {
-	if(nodo != NULL) {
+	if(!EsVacio()) {
 		if(Hoja()) {
 			return 1;
 		}
@@ -285,6 +281,7 @@ int TABBPoro::NodosHoja() const {
 TVectorPoro TABBPoro::Inorden() const {
 	int posicion = 1;
 	TVectorPoro v(Nodos());
+
 	InordenAux(v, posicion);
 
 	return v;
@@ -307,17 +304,61 @@ TVectorPoro TABBPoro::Postorden() const {
 }
 
 TVectorPoro TABBPoro::Niveles() const {
+	int i = 1;
+	TVectorPoro vector(Nodos());
+	queue<TABBPoro*> cola;
+
+	TABBPoro aAux(*this);
+	TABBPoro *aux = &aAux;
 	
+	if(!EsVacio()) {
+		cola.push(&aAux);
+
+		while(!cola.empty()) {
+			aux = cola.front();
+			vector[i++] = aux->nodo->item;
+			cola.pop();
+
+			if(!aux->nodo->iz.EsVacio()) {
+				cola.push(&(aux->nodo->iz));
+			}
+			if(!aux->nodo->de.EsVacio()) {
+				cola.push(&(aux->nodo->de));
+			}
+		}
+	}
+
+	return vector;
 }
 
 TABBPoro TABBPoro::operator+(const TABBPoro &arbol) {
+	TABBPoro copia(*this);
+	int tam = arbol.Nodos();
+	TVectorPoro vector(arbol.Inorden());
 
+	for(int i=1; i<=tam; i++) {
+		copia.Insertar(vector[i]);
+	}
+
+	return copia;
 }
 
-TABBPoro TABBPoro::operator+(const TABBPoro &arbol) {
+TABBPoro TABBPoro::operator-(const TABBPoro &arbol) {
+	TABBPoro a;
+	int tam = Nodos();
+	TVectorPoro vector(Inorden());
 
+	for(int i=1; i<=tam; i++) {
+		if(!arbol.Buscar(vector[i])) {
+			a.Insertar(vector[i]);
+		}
+	}
+
+	return a;
 }
 
-ostream & TABBPoro::operator<<(ostream &os, const TABBPoro &arbol) {
-	
+ostream & operator<<(ostream &os, const TABBPoro &arbol) {
+	os << arbol.Niveles();
+
+	return os;
 }

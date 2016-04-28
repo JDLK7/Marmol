@@ -56,7 +56,7 @@ bool TVectorPoro::operator==(const TVectorPoro &vector) const {
 
 	if(dimension == vector.Longitud()) {
 		for(int i=0; i<dimension && igual; i++) {
-			if(vector[i]!=datos[i]) {
+			if(vector[i+1]!=datos[i]) {
 				igual=false;
 			}
 		}
@@ -148,7 +148,7 @@ int TVectorPoro::Cantidad() const {
 }
 
 
-ostream & operator<<(ostream &os, TVectorPoro &vector) {
+ostream & operator<<(ostream &os, const TVectorPoro &vector) {
 	os << "[";
 	for(int i=0; i<vector.dimension; i++) {
 		os << i+1 << " ";

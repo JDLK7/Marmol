@@ -28,6 +28,8 @@ main(void)
   a.Insertar(p6);
   a.Insertar(p7);
 
+  //cout << a.Inorden() << endl;
+
   if(!a.Borrar(p1))
   	cout << "Error NO BORRADO" << endl;
 
@@ -44,7 +46,6 @@ main(void)
   	cout << "Error NO BORRADO" << endl;
 
   cout << a.Inorden() << endl;
-
-
+  
   return 1;
 }
