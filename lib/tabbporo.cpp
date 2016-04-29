@@ -13,11 +13,22 @@ TNodoABB::~TNodoABB() {
 
 }
 
-//REVISAR
 TNodoABB & TNodoABB::operator=(const TNodoABB &nodo) {
-	item = nodo.item;
-	iz = nodo.iz;
-	de = nodo.de;
+	if(this != &nodo) {
+		TPoro poro;
+		poro = nodo.item;
+
+		TABBPoro izquierda, derecha;
+
+		if(nodo.iz.nodo != NULL && nodo.de.nodo != NULL) {
+			izquierda = nodo.iz;
+			derecha = nodo.de;
+		}
+		else {
+			izquierda.nodo = NULL;
+			derecha.nodo = NULL;
+		}
+	}
 
 	return (*this);
 }
