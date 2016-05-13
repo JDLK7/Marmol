@@ -20,6 +20,7 @@ TNodoABB & TNodoABB::operator=(const TNodoABB &nodo) {
 
 		TABBPoro izquierda, derecha;
 
+		//Esto esta bien?
 		if(nodo.iz.nodo != NULL && nodo.de.nodo != NULL) {
 			izquierda = nodo.iz;
 			derecha = nodo.de;
