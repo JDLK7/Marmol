@@ -62,7 +62,9 @@ void TAVLPoro::Copiar(const TAVLPoro &arbol) {
 	if(arbol.raiz != NULL) {
 		TNodoAVL *n = new TNodoAVL();
 		n->item = arbol.raiz->item;
-		fe = n->fe;
+
+		raiz->fe = n->fe;
+		
 		raiz = n;
 		(raiz->iz).Copiar(arbol.raiz->iz);
 		(raiz->de).Copiar(arbol.raiz->de);
@@ -108,7 +110,7 @@ bool TAVLPoro::operator==(const TAVLPoro &arbol) const {
 }
 
 bool TAVLPoro::operator!=(const TAVLPoro &arbol) const {
-	return !((*this) == arbol)
+	return !((*this) == arbol);
 }
 
 bool TAVLPoro::EsVacio() const {
@@ -231,8 +233,8 @@ bool TAVLPoro::Borrar(const TPoro &poro) {
 
 }
 
-TPoro Raiz() const {
-	if(raiz != NULL) {
+TPoro TAVLPoro::Raiz() const {
+	if(!EsVacio()) {
 		return raiz->item;
 	}
 	else {

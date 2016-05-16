@@ -8,10 +8,10 @@ class TNodoAVL;
 class TAVLPoro {
 	private:
 		TNodoAVL *raiz;
-		void InordenAux(TVectorPoro &vector, int pos);
-		void PreordenAux(TVectorPoro &vector, int pos);
-		void PostordenAux(TVectorPoro &vector, int pos);
-		void Copiar(const TVectorPoro &vector);
+		void InordenAux(TVectorPoro &vector, int &pos) const;
+		void PreordenAux(TVectorPoro &vector, int &pos) const;
+		void PostordenAux(TVectorPoro &vector, int &pos) const;
+		void Copiar(const TAVLPoro &arbol);
 		void Reequilibrar();
 	
 	public:
@@ -35,6 +35,7 @@ class TAVLPoro {
 		bool Borrar(const TPoro &poro);
 		TPoro Raiz() const;
 	friend ostream & operator<<(ostream &os, const TAVLPoro &arbol);
+	friend class TNodoAVL;
 };	
 
 class TNodoAVL {
@@ -48,6 +49,7 @@ class TNodoAVL {
 		TNodoAVL(const TNodoAVL &nodo);
 		~TNodoAVL();
 		TNodoAVL & operator=(const TNodoAVL &nodo);
+	friend class TAVLPoro;
 };
 
 #endif // TAVLPORO_H
