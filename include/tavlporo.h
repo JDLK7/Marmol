@@ -11,6 +11,8 @@ class TAVLPoro {
 		void InordenAux(TVectorPoro &vector, int pos);
 		void PreordenAux(TVectorPoro &vector, int pos);
 		void PostordenAux(TVectorPoro &vector, int pos);
+		void Copiar(const TVectorPoro &vector);
+		void Reequilibrar();
 	
 	public:
 		TAVLPoro();
@@ -23,6 +25,7 @@ class TAVLPoro {
 		bool EsVacio() const;
 		bool Insertar(const TPoro &poro);
 		bool Buscar(const TPoro &poro) const;
+		bool Hoja() const;
 		int Altura() const;
 		int Nodos() const;
 		int NodosHoja() const;
