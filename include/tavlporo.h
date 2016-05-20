@@ -13,6 +13,12 @@ class TAVLPoro {
 		void PostordenAux(TVectorPoro &vector, int &pos) const;
 		void Copiar(const TAVLPoro &arbol);
 		void Reequilibrar();
+		TPoro BuscarMayor() const ;//cambialo por el tuyo
+		void rotacionDD();
+		void rotacionID();
+		void rotacionDI();
+		void rotacionII();
+		TNodoAVL * HijoDerecha() const;
 	
 	public:
 		TAVLPoro();

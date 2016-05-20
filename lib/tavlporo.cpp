@@ -31,6 +31,22 @@ TNodoAVL & TNodoAVL::operator=(const TNodoAVL &nodo) {
 }
 
 //////////////////////////////////////////TAVLPoro//////////////////////////////////////////
+
+TPoro TAVLPoro::BuscarMayor() const
+{
+	TPoro p;
+	TNodoAVL *pNodo=NULL;
+
+	pNodo=raiz;
+	while(pNodo->de.raiz!=NULL)
+	{
+		pNodo=pNodo->de.raiz;
+	}
+	p=pNodo->item;
+	return p;
+}
+
+
 void TAVLPoro::InordenAux(TVectorPoro &vector, int &pos) const {
 	if(!EsVacio()) {
 		raiz->iz.InordenAux(vector, pos);
@@ -63,7 +79,7 @@ void TAVLPoro::Copiar(const TAVLPoro &arbol) {
 		TNodoAVL *n = new TNodoAVL();
 		n->item = arbol.raiz->item;
 
-		raiz->fe = n->fe;
+		n->fe = arbol.raiz->fe;
 		
 		raiz = n;
 		(raiz->iz).Copiar(arbol.raiz->iz);
@@ -73,9 +89,8 @@ void TAVLPoro::Copiar(const TAVLPoro &arbol) {
 		raiz = NULL;
 	}
 }
-
-void TAVLPoro::Reequilibrar() {
-
+TNodoAVL * TAVLPoro::HijoDerecha() const {
+	return raiz->de.raiz;
 }
 
 TAVLPoro::TAVLPoro() {
@@ -94,9 +109,10 @@ TAVLPoro::~TAVLPoro() {
 }
 
 TAVLPoro & TAVLPoro::operator=(const TAVLPoro &arbol) {
-	(*this).~TAVLPoro();
-	Copiar(arbol);
-
+	if(this != &arbol){
+		(*this).~TAVLPoro();
+		Copiar(arbol);
+	}
 	return (*this);
 }
 
@@ -117,26 +133,136 @@ bool TAVLPoro::EsVacio() const {
 	return raiz == NULL;
 }
 
-bool TAVLPoro::Insertar(const TPoro &poro) {
-	if(!EsVacio()) {
-		double v = poro.Volumen();
-		double vr = Raiz().Volumen();
-
-		//No se pueden insertar duplicados.
-		if(poro == raiz->item) {
-			return false;
+void TAVLPoro::Reequilibrar(){
+	//Por la derecha
+	if(raiz->fe==2){
+		if(raiz->de.raiz->fe==1 || raiz->de.raiz->fe==0) {
+			rotacionDD();
 		}
-	}
-	else {
-		raiz = new TNodoAVL();
-		raiz->item = poro;
-		raiz->fe = 0;
+		else if(raiz->de.raiz->fe==-1) {
+			rotacionDI();
+		}
 
-		return true;
+	}
+	//Por la izquierda
+	else if(raiz->fe==-2) {
+		if(raiz->iz.raiz->fe==1) {
+			rotacionID();
+		}
+		else if(raiz->iz.raiz->fe==-1 || raiz->iz.raiz->fe==0) {
+			rotacionII();
+		}
 	}
 }
 
-//Buscar no se si sirve.
+void TAVLPoro::rotacionDD(){
+	TAVLPoro B,D,C;
+
+	B=(*this);
+	D=raiz->de;
+	C=raiz->de.raiz->iz;
+
+	(*this)=D;
+	raiz->iz=B;
+	raiz->iz.raiz->de=C;
+	
+}
+void TAVLPoro::rotacionID(){
+	TAVLPoro F,B,D,C,E;
+
+	F=(*this);
+	B=raiz->iz;
+	D=raiz->iz.raiz->de;
+	E=raiz->iz.raiz->de.raiz->de;
+	C=raiz->iz.raiz->de.raiz->iz;
+
+	(*this)=D;
+	raiz->iz=B;
+	raiz->iz.raiz->de=C;
+	raiz->de=F;
+	raiz->de.raiz->iz=E;
+}
+void TAVLPoro::rotacionDI(){
+	TAVLPoro B,F,D,C,E;
+
+	B=(*this);
+	F=raiz->de;
+	D=raiz->de.raiz->iz;
+	C=raiz->de.raiz->iz.raiz->iz;
+	E=raiz->de.raiz->iz.raiz->de;
+
+	(*this)=D;
+	raiz->iz=B;
+	raiz->de=F;
+	raiz->iz.raiz->de=C;
+	raiz->de.raiz->iz=E;
+
+}
+void TAVLPoro::rotacionII(){
+	TAVLPoro D,B,C;
+	
+	D=(*this);
+	B=raiz->iz;
+	C=raiz->iz.raiz->de;
+	
+	(*this)=B;
+	raiz->de=D;
+	raiz->de.raiz->iz=C;
+}
+
+bool TAVLPoro::Insertar(const TPoro &poro) {
+
+	bool correcto=false;
+	if(raiz != NULL) {
+			double v = poro.Volumen();
+			double vr = Raiz().Volumen();
+
+			//No se pueden insertar duplicados.
+			if(poro == raiz->item) {
+				return false;
+			}
+			else if(Hoja()) {
+				if(v > vr) {
+					raiz->de.raiz = new TNodoAVL();
+					raiz->de.raiz->item = poro;
+					return true;
+				}
+				else {
+					raiz->iz.raiz = new TNodoAVL();
+					raiz->iz.raiz->item = poro;
+					return true;
+				}
+			}
+			else {
+				if(v > vr) {
+					if((raiz->de).Insertar(poro)){
+						//Se actualiza el factor de equilibrio y se llama a reequilibrar.
+						this->raiz->fe = this->raiz->de.Altura() - this->raiz->iz.Altura();
+						Reequilibrar();
+
+						return true;
+					}
+				}
+				else {
+					if((raiz->iz).Insertar(poro)){
+						this->raiz->fe = this->raiz->de.Altura() - this->raiz->iz.Altura();
+						Reequilibrar();
+
+						return true;
+					}
+				}
+			}
+
+		}
+		else {
+			raiz = new TNodoAVL();
+			raiz->item = poro;
+			raiz->fe=0;
+			return true;
+		}
+return correcto;
+}
+
 bool TAVLPoro::Buscar(const TPoro &poro) const {
 	if(!EsVacio()) {
 		if(raiz->item == poro) {
@@ -230,7 +356,67 @@ TVectorPoro TAVLPoro::Postorden() const {
 }
 
 bool TAVLPoro::Borrar(const TPoro &poro) {
+	bool correcto=false;
 
+if(!EsVacio()) {
+		if(raiz->item == poro) {
+			//Si es hoja se borra directamente
+			if(Hoja()) {
+				(*this).~TAVLPoro();
+			}
+			//Tiene un solo hijo a la izquierda
+			else if(raiz->iz.raiz != NULL && raiz->de.raiz == NULL) {
+				TNodoAVL *n = raiz;
+				raiz = raiz->iz.raiz;
+				n->iz.raiz = NULL;
+				delete n;
+			}
+			//Tiene un solo hijo a la derecha
+			else if(raiz->iz.raiz == NULL && raiz->de.raiz != NULL) {
+				TNodoAVL *n = raiz;
+				raiz = raiz->de.raiz;
+				n->de.raiz = NULL;
+				delete n;
+			}
+			//Tiene dos hijos
+			else {
+				TNodoAVL *n = raiz;
+				raiz = HijoDerecha();
+				//Comprobamos que el nodo al que apuntaba no es HijoDerecha para evitar bucles.
+				if(n->iz.raiz != raiz) {
+					raiz->iz.raiz = n->iz.raiz;
+				}
+				if(n->de.raiz != raiz) {
+					raiz->de.raiz = n->de.raiz;
+				}
+				n->de.raiz = NULL;
+				n->iz.raiz = NULL;
+				delete n;
+			}
+
+			return true;
+		}
+		else if(poro.Volumen() > raiz->item.Volumen()){
+			if((raiz->de).Borrar(poro)){
+				this->raiz->fe = this->raiz->de.Altura() - this->raiz->iz.Altura();
+				Reequilibrar();
+
+				return true;
+			}
+		}
+		else {
+			if((raiz->iz).Borrar(poro)){
+				this->raiz->fe = this->raiz->de.Altura() - this->raiz->iz.Altura();
+				Reequilibrar();
+
+				return true;
+			}
+		}
+	}
+	else {
+		return false;
+	}
+return correcto;
 }
 
 TPoro TAVLPoro::Raiz() const {
